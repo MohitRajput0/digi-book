@@ -1,0 +1,23 @@
+# Python & Virtual Environments
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.class
+*.env
+
+# Local Storage Uploads (Phase 4 files)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Node & Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
