@@ -1,32 +1,37 @@
 # Digi Book 📚
 
-> A modern, modular academic resource sharing platform built with a high-performance FastAPI backend, PostgreSQL database, and a React (Vite) frontend.
+A modern, modular academic resource-sharing platform built with FastAPI, PostgreSQL, and React (Vite).
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
-- **Backend:** FastAPI, SQLAlchemy 2.0, Pydantic v2, PostgreSQL (psycopg2)
-- **Frontend:** React 18, Vite, Lucide React
-- **Architecture:** Modular CRUD repository pattern, RESTful API, OpenAPI 3.1 (Swagger UI)
+- **Backend:** FastAPI, SQLAlchemy 2.0, Pydantic v2, PostgreSQL (`psycopg2`), Uvicorn
+- **Frontend:** React 18, Vite, Axios, Lucide React
+- **Architecture:** Layered repository pattern, RESTful API, OpenAPI 3.1 (Swagger UI)
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```text
 digi-book/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/endpoints/  # Route controllers (users, resources)
-│   │   ├── core/              # Config and settings
+│   │   ├── api/v1/endpoints/  # Route handlers (users, resources)
+│   │   ├── core/              # Security, settings & configs
 │   │   ├── crud/              # Database operations
-│   │   ├── database/          # Engine and session lifecycle
-│   │   ├── models/            # SQLAlchemy database tables
-│   │   └── schemas/           # Pydantic data validation schemas
-│   ├── requirements.txt
-│   └── .env.example
+│   │   ├── database/          # Session lifecycle & Base metadata
+│   │   ├── models/            # SQLAlchemy database models
+│   │   ├── schemas/           # Pydantic validation schemas
+│   │   └── main.py            # FastAPI entry point & CORS
+│   ├── uploads/               # Stored file assets
+│   ├── .env.example           # Template for environment variables
+│   └── requirements.txt       # Python dependencies
 ├── frontend/
-│   ├── src/                   # React components and views
-│   └── package.json
+│   ├── src/
+│   │   ├── services/api.js    # Axios API client
+│   │   ├── App.jsx            # Dynamic resource dashboard
+│   │   └── main.jsx           # React root
+│   └── package.json           # Frontend scripts & dependencies
 └── README.md
