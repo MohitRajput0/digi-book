@@ -1,21 +1,24 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Trash2, FileText, AlertCircle, RefreshCw } from 'lucide-react';
+import { BookOpen, Plus, Trash2, FileText, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { getResources, createResource, deleteResource, getUsers } from './services/api';
+
+const initialFormData = {
+  title: '',
+  description: '',
+  file_type: 'PDF',
+  file_path: 'https://example.com/demo.pdf'
+};
 
 function App() {
   const [resources, setResources] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedOwnerId, setSelectedOwnerId] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    file_type: 'PDF',
-    file_path: 'https://example.com/demo.pdf'
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const fetchData = async () => {
     try {
@@ -42,21 +45,28 @@ function App() {
     fetchData();
   }, []);
 
+  const handleOpenModal = () => {
+    setFormData(initialFormData);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setFormData(initialFormData);
+  };
+
   const handleCreateResource = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true);
       await createResource(formData, selectedOwnerId);
-      setShowModal(false);
-      setFormData({
-        title: '',
-        description: '',
-        file_type: 'PDF',
-        file_path: 'https://example.com/demo.pdf'
-      });
+      handleCloseModal();
       fetchData();
     } catch (err) {
       console.error(err);
       alert('Error creating resource: ' + (err.response?.data?.detail?.[0]?.msg || err.message));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -72,6 +82,11 @@ function App() {
     }
   };
 
+  const getOwnerName = (ownerId) => {
+    const owner = users.find((u) => u.id === ownerId);
+    return owner?.full_name || owner?.email || `User #${ownerId || 1}`;
+  };
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif' }}>
       <header style={{ borderBottom: '1px solid #1e293b', padding: '16px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -82,12 +97,13 @@ function App() {
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
             onClick={fetchData} 
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#1e293b', border: '1px solid #334155', color: '#e2e8f0', padding: '8px 14px', borderRadius: '6px', cursor: 'pointer' }}
+            disabled={loading}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#1e293b', border: '1px solid #334155', color: '#e2e8f0', padding: '8px 14px', borderRadius: '6px', cursor: loading ? 'not-allowed' : 'pointer' }}
           >
             <RefreshCw size={16} /> Refresh
           </button>
           <button 
-            onClick={() => setShowModal(true)} 
+            onClick={handleOpenModal} 
             style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0284c7', border: 'none', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
           >
             <Plus size={16} /> Add Resource
@@ -120,19 +136,34 @@ function App() {
                     <span style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', backgroundColor: '#0369a1', color: '#e0f2fe', padding: '3px 8px', borderRadius: '4px' }}>
                       {item.file_type || 'DOC'}
                     </span>
-                    <button 
-                      onClick={() => handleDeleteResource(item.id)} 
-                      style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}
-                      title="Delete resource"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {item.file_path && (
+                        <a 
+                          href={item.file_path} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', textDecoration: 'none' }}
+                          title="Open / View File"
+                        >
+                          <ExternalLink size={16} />
+                        </a>
+                      )}
+                      <button 
+                        onClick={() => handleDeleteResource(item.id)} 
+                        style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}
+                        title="Delete resource"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                   <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#f1f5f9' }}>{item.title}</h3>
                   <p style={{ color: '#cbd5e1', fontSize: '14px', lineHeight: '1.4' }}>{item.description || 'No description provided.'}</p>
                 </div>
-                <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Owner ID: #{item.owner_id || 1}</span>
+                <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    By: <strong style={{ color: '#94a3b8' }}>{getOwnerName(item.owner_id)}</strong>
+                  </span>
                   <span>{item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Recent'}</span>
                 </div>
               </div>
@@ -204,16 +235,18 @@ function App() {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                   <button 
                     type="button" 
-                    onClick={() => setShowModal(false)} 
-                    style={{ padding: '8px 14px', backgroundColor: '#334155', border: 'none', borderRadius: '6px', color: '#e2e8f0', cursor: 'pointer' }}
+                    onClick={handleCloseModal} 
+                    disabled={isSubmitting}
+                    style={{ padding: '8px 14px', backgroundColor: '#334155', border: 'none', borderRadius: '6px', color: '#e2e8f0', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit" 
-                    style={{ padding: '8px 16px', backgroundColor: '#0284c7', border: 'none', borderRadius: '6px', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                    disabled={isSubmitting}
+                    style={{ padding: '8px 16px', backgroundColor: isSubmitting ? '#0369a1' : '#0284c7', border: 'none', borderRadius: '6px', color: '#fff', fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
                   >
-                    Save Resource
+                    {isSubmitting ? 'Saving...' : 'Save Resource'}
                   </button>
                 </div>
               </form>
