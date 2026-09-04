@@ -132,7 +132,7 @@ function App() {
                   <p style={{ color: '#cbd5e1', fontSize: '14px', lineHeight: '1.4' }}>{item.description || 'No description provided.'}</p>
                 </div>
                 <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Owner ID: #{item.owner_id || item.uploaded_by || 1}</span>
+                  <span>Owner ID: #{item.owner_id || 1}</span>
                   <span>{item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Recent'}</span>
                 </div>
               </div>
