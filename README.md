@@ -9,6 +9,18 @@ A modern, modular academic resource-sharing platform built with FastAPI, Postgre
 * **Frontend:** React 18, Vite, Axios, Lucide React
 * **Architecture:** Layered repository pattern, RESTful API, OpenAPI 3.1 (Swagger UI)
 
+## 🚀 Key API Endpoints
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/v1/auth/register` | Public | Register new user account |
+| **POST** | `/api/v1/auth/login` | Public | OAuth2 login, returns JWT token |
+| **GET** | `/api/v1/auth/me` | Protected | Fetch current authenticated user |
+| **GET** | `/api/v1/users/` | Public | List platform users |
+| **GET** | `/api/v1/resources/` | Public | Browse and filter academic resources |
+| **POST** | `/api/v1/resources/` | Protected | Upload academic resource |
+| **DELETE** | `/api/v1/resources/{id}` | Protected | Remove resource (owner/superuser only) |
+
 ## 📁 Project Structure
 
 ```text
