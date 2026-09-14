@@ -4,22 +4,32 @@ A modern, modular academic resource-sharing platform built with FastAPI, Postgre
 
 ## 🛠️ Tech Stack
 
-* **Backend:** FastAPI, SQLAlchemy 2.0, Pydantic v2, PostgreSQL (`psycopg2`), Uvicorn
-* **Security & Auth:** JWT (`python-jose`), Password hashing (`passlib`, `bcrypt`), OAuth2 Bearer flow
-* **Frontend:** React 18, Vite, Axios, Lucide React
-* **Architecture:** Layered repository pattern, RESTful API, OpenAPI 3.1 (Swagger UI)
+* **Backend**: FastAPI, SQLAlchemy 2.0, Pydantic v2, PostgreSQL (psycopg2), Uvicorn
+* **Security & Auth**: JWT (python-jose), Password hashing (passlib, bcrypt), OAuth2 Bearer flow
+* **Frontend**: React 18, Vite, Axios, Lucide React
+* **Architecture**: Layered repository pattern, RESTful API, OpenAPI 3.1 (Swagger UI)
+
+## 📌 Development Progress
+
+* **Phases 1–4**: Scaffolding, database schema modeling, user registration/login, and baseline CRUD endpoints.
+* **Phase 5 (Completed)**: Resource Ownership & Role-Based Access Control (RBAC):
+  * Secured resource mutation routes (`POST`, `PUT`, `DELETE`) via `deps.get_current_user`.
+  * Automated owner assignment from JWT claims on resource upload (`owner_id`).
+  * Enforced ownership verification (`owner_id == current_user.id` or `is_superuser`) before permitting update or deletion actions.
 
 ## 🚀 Key API Endpoints
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| **POST** | `/api/v1/auth/register` | Public | Register new user account |
-| **POST** | `/api/v1/auth/login` | Public | OAuth2 login, returns JWT token |
-| **GET** | `/api/v1/auth/me` | Protected | Fetch current authenticated user |
-| **GET** | `/api/v1/users/` | Public | List platform users |
-| **GET** | `/api/v1/resources/` | Public | Browse and filter academic resources |
-| **POST** | `/api/v1/resources/` | Protected | Upload academic resource |
-| **DELETE** | `/api/v1/resources/{id}` | Protected | Remove resource (owner/superuser only) |
+| `POST` | `/api/v1/auth/register` | Public | Register new user account |
+| `POST` | `/api/v1/auth/login` | Public | OAuth2 login, returns JWT token |
+| `GET` | `/api/v1/auth/me` | Protected | Fetch current authenticated user |
+| `GET` | `/api/v1/users/` | Public | List platform users |
+| `GET` | `/api/v1/resources/` | Public | Browse and filter academic resources |
+| `GET` | `/api/v1/resources/{id}` | Public | Get specific resource by ID |
+| `POST` | `/api/v1/resources/` | Protected | Upload academic resource (auto-assigns owner) |
+| `PUT` | `/api/v1/resources/{id}` | Protected | Update resource (owner/superuser only) |
+| `DELETE` | `/api/v1/resources/{id}` | Protected | Remove resource (owner/superuser only) |
 
 ## 📁 Project Structure
 
